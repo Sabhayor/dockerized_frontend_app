@@ -156,6 +156,7 @@ Replace `YOUR_DOCKERHUB_USERNAME` and `frontend-static` with your values.
 ```bash
 docker build -t YOUR_DOCKERHUB_USERNAME/frontend-static:latest .
 ```
+![docker-build](./images/docker_build.png)
 
 You can test the image locally:
 
@@ -163,7 +164,7 @@ You can test the image locally:
 docker run --rm -p 8080:80 YOUR_DOCKERHUB_USERNAME/frontend-static:latest
 # then open http://localhost:8080
 ```
-
+![docker run](./images/webpage.png)
 ---
 
 ## Task 5 — Push to Docker Hub
@@ -189,6 +190,7 @@ docker push YOUR_DOCKERHUB_USERNAME/frontend-static:latest
 
 > If you need to create the repository on Docker Hub, go to https://hub.docker.com and create a new repository named `frontend-static` (or whatever you prefer) before pushing.
 
+![pushed image](./images/pushed_image.png)
 ---
 
 ## Task 6 — Set up a Kind Kubernetes cluster
@@ -201,6 +203,8 @@ curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.25.0/kind-$(uname)-amd64
 chmod +x ./kind
 mv ./kind /usr/local/bin/kind
 
+On windows, run "choco install kind"
+
 # verify
 kind --version
 ```
@@ -211,13 +215,14 @@ Create a simple cluster:
 kind create cluster --name frontend-cluster
 # this uses Docker to create a local k8s cluster
 ```
+![kind-install](./images/kind-installed.png)
 
 Confirm kubectl can talk to it:
 
 ```bash
 kubectl cluster-info --context kind-frontend-cluster || kubectl get nodes
 ```
-
+![kubectl cluster-info](./images/resolve%20error%20btw%20kubectl%20&%20kind%20cluster.png)
 ---
 
 ## Task 7 — Deploy to Kubernetes
@@ -255,6 +260,7 @@ kubectl apply -f k8s/deployment.yaml
 kubectl rollout status deployment/frontend-deployment
 kubectl get pods -l app=frontend
 ```
+![Apply deployment](./images/deployment%20applied.png)
 
 > If you are using an image from Docker Hub and your cluster nodes need access, it should work (Docker Hub public images are accessible). If you use a private repo, you'll need to set up an imagePullSecret.
 
@@ -286,7 +292,7 @@ Apply the service:
 kubectl apply -f k8s/service.yaml
 kubectl get svc frontend-service
 ```
-
+![apply service](./images/apply%20service.png)
 ---
 
 ## Task 9 — Access the application
@@ -296,12 +302,14 @@ Since the service is a `ClusterIP`, use `kubectl port-forward` to access it loca
 ```bash
 kubectl port-forward svc/frontend-service 8080:80
 ```
+![port forwarding](./images/port-forwarding.png)
 
 Open your browser and visit:
 
 ```
 http://localhost:8080
 ```
+![frontend-app](./images/frontend-app.png)
 
 You should see the static landing page served by the containers in your Kind cluster.
 
@@ -339,7 +347,7 @@ kind delete cluster --name frontend-cluster
 # optionally remove local docker image
 docker rmi YOUR_DOCKERHUB_USERNAME/frontend-static:latest
 ```
-
+![cleanup](./images/cleanup.png)
 ---
 
 ## Final notes
